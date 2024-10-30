@@ -1,0 +1,67 @@
+>>1
+create table bijoy.details (id int, firstname varchar(50),
+lastname varchar(50), gender char(1), departmentname varchar(100),
+age tinyint, salary decimal (10,2))
+
+>>2
+create table bijoy.temp (single char(1))
+
+insert into bijoy.temp values ('22');
+
+"Msg 8152, Level 16, State 30, Line 7
+String or binary data would be truncated.
+The statement has been terminated."
+
+>>3
+create table bijoy.temp1 (single char(1))
+
+alter table bijoy.temp1
+alter column single varchar(2)
+insert into bijoy.temp1 values('22')
+
+>>4
+declare @Arrival_time datetime
+set @Arrival_time='2020-09-24 13:37:37.000'
+select left( upper( DATENAME (DW,@Arrival_time)), 3)as day,left(upper(DateNAme(MONTH,@Arrival_time)), 3) as month,DATENAME (DAY,@Arrival_time)as day,Year(@Arrival_time)as year
+
+>>5
+create table bijoy.#date
+(date1 date,datetime1 datetime,datetime22 datetime2,time1 time)
+insert into bijoy.#date 
+values('2020-09-24','09-24-2020','2020-09-24 13:37:37.6152758','13:37:37.6152758')
+
+>>6
+select convert(date, datetime1) as datey from bijoy.#date
+
+>>7
+Text : Holds a string with a maximum length of 65,535 bytes
+Ntext : Variable-length Unicode data with a maximum string length of 2^30 - 1 (1,073,741,823) bytes.
+Binary : Equal to CHAR(), but stores binary byte strings. The size parameter specifies the column length in bytes. Default is 1
+Varbinary : Equal to VARCHAR(), but stores binary byte strings. The size parameter specifies the maximum column length in bytes.
+Image : Variable width binary string. Maximum size : 2GB
+Real : The REAL data type is an approximate number with floating point numeric data. REAL value is approximate which means not all range of values can be represented exactly. REAL is equivalent to FLOAT(24).
+XML : The xml data type is a built-in data type in SQL Server and is somewhat similar to other built-in types such as int and varchar. As with other built-in types, you can use the xml data type as a column type when you create a table as a variable type, a parameter type, a function-return type, or in CAST and CONVERT.
+      
+>>8
+NVARCHAR is used when dealing with text in multiple languages (Unicode characters) to ensure compatibility.
+VARCHAR is used for single-language text where character encoding isn't a concern, as it's more storage-efficient.
+Syntax:
+VARCHAR (n)
+NVARCHAR (n)
+
+>>9
+Char has a fixed size, but varchar has a variable size. Char data type stores data of fixed length, whereas the Varchar data type stores variable format data. Varchar data type values are not padded with spaces; char values are padded with spaces to the specified length.
+Use char when the sizes of the column data entries are consistent. Use varchar when the sizes of the column data entries vary considerably.
+create table #demo1(id smallint, phone char(10),name varchar(50))
+
+
+
+
+
+
+
+
+
+
+
+

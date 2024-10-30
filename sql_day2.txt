@@ -1,0 +1,75 @@
+>>
+
+create table bijoy.worker(WORKER_ID int, FIRST_NAME varchar(100),LAST_NAME varchar(100),
+ SALARY int, JOINING_DATE date,DEPARTMENT varchar(100))
+
+>>
+
+insert into bijoy.worker values
+          (001,'Monika',' Arora',100000,'2014-02-20' ,'HR'),
+          (002,'Niharika',' Verma',80000,'2014-06-11' ,'Admin'),
+          (003,'Vishal','	Singhal',300000,'2014-02-20','HR'),
+          (004,'Amitabh',' Singh',500000,'2014-02-20' ,'Admin'),
+          (005,'Vivek	','Bhati',500000,'2014-06-11','Admin'),
+          (006,'Vipul	','Diwan',200000,'2014-06-11' ,'Account'),
+          (007,'Satish','	Kumar',75000,'2014-01-20' ,'Account'),
+          (008,'Geetika',' Chauhan',90000,'2014-04-11' ,'Admin')
+
+>>1
+
+select distinct * from bijoy.worker order by FIRST_NAME asc;
+
+>>2
+
+select * from bijoy.worker where FIRST_NAME in ('Satish', 'Vipul');
+
+>>3
+
+select * from bijoy.worker where DEPARTMENT = 'Admin' and not FIRST_NAME in ('Satish', 'Vipul');
+
+>>4
+
+select * from bijoy.worker where SALARY between 100000 and 500000;
+
+>>5
+
+select FIRST_NAME, JOINING_DATE from bijoy.worker where FIRST_NAME like '%s%' or LAST_NAME like '%a';
+
+>>6
+
+alter table bijoy.worker add Active int;
+
+update bijoy.worker set Active =case
+	when DEPARTMENT = 'Admin' Then 1
+	when DEPARTMENT = 'HR' Then 1
+		else null
+	end;
+
+>>7
+
+select * from bijoy.worker where Active is null;
+
+>>8
+
+select * ,case 
+	when SALARY < 100000 then 'Low'
+	when SALARY >=75000 then 'High'
+	end as Salary_Level
+	from bijoy.worker;
+
+>>9
+
+select * from bijoy.worker where DEPARTMENT in ('HR');
+
+select * from bijoy.worker as w1
+   where exists (
+    select 1
+      from bijoy.worker as w2
+      where w1.WORKER_ID = w2.WORKER_ID 
+      and w2.DEPARTMENT = 'HR');
+
+
+
+
+
+

@@ -1,0 +1,77 @@
+create table bijoy.OutputParameter (paraName varchar(100))
+
+insert into bijoy.OutputParameter values ('one'),('two'), ('three')
+
+create procedure SpAllDataAndCountWhereOne
+	@name nvarchar(60),
+	@count int out
+	as 
+	begin
+	select @count = count(*) from bijoy.OutputParameter
+	where paraName = @name
+
+	select paraName,count(paraName) from bijoy.OutputParameter group by paraName
+End
+
+Declare @TotalCount int 
+Exec SpAllDataAndCountWhereOne @count = @TotalCount out, @name = 'one'
+Select @TotalCount
+
+select * from Training_DB.dbo.SQLTrainingStatus
+
+--QUESTION
+--Training_DB.dbo.SQLTrainingStatus
+--employee id 
+--name (first and last)
+--phone number (it should remove the delimiters)
+--salary
+--Where  (only IT programmers)
+
+
+
+Create view bijoy.VwTrainingStatus2
+as
+select FIRST_NAME+' '+LAST_NAME as Name,replace(PHONE_NUMBER,'.','') AS PHONE,SALARY from Training_DB.dbo.SQLTrainingStatus
+where JOB_ID='IT_PROG'
+
+
+alter view bijoy.VwTrainingStatus2
+as
+select EMPLOYEE_ID, FIRST_NAME+' '+LAST_NAME as Name,replace(PHONE_NUMBER,'.','') AS PHONE,SALARY from Training_DB.dbo.SQLTrainingStatus
+where JOB_ID='IT_PROG'
+
+replace(PHONE_NUMBER,'.','') AS PHONE
+
+select * from bijoy.VwTrainingStatus2
+-----------------------------------------------------------------------
+
+create procedure SpSQLTraining2
+	@dept nvarchar(60)
+
+	as 
+	begin
+	select EMPLOYEE_ID, FIRST_NAME+' '+LAST_NAME as Name,replace(PHONE_NUMBER,'.','') AS PHONE,SALARY from Training_DB.dbo.SQLTrainingStatus
+where JOB_ID=@dept
+
+End
+
+Exec SpSQLTraining2   'IT_PROG'
+
+alter procedure SpSQLTraining2
+	@dept varchar(60)
+
+	as 
+	begin
+	select EMPLOYEE_ID, FIRST_NAME+' '+LAST_NAME as Name,replace(PHONE_NUMBER,'.','') AS PHONE,SALARY,
+	case 
+		when JOB_ID='AD_PRES' then SALARY+500
+		when JOB_ID='AD_VP' then SALARY+200
+		when JOB_ID='IT_PROG' then SALARY+1000
+		when JOB_ID='others' then SALARY+100
+	end as Updated_Salary
+	from Training_DB.dbo.SQLTrainingStatus
+	where JOB_ID=@dept
+End
+
+
+

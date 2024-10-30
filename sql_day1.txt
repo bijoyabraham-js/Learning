@@ -1,0 +1,126 @@
+>>1
+
+CREATE PROCEDURE top5
+AS
+BEGIN
+    SELECT TOP 5 
+        CONCAT(c.FirstName, ' ', c.LastName) AS CustomerName,
+        COUNT(DISTINCT od.ProductID) AS UniqueProducts,
+        SUM(od.Quantity * od.UnitPrice) AS TotalPurchaseAmount
+    FROM 
+        Customers c
+    JOIN 
+        Orders o ON c.CustomerID = o.CustomerID
+    JOIN 
+        OrderDetails od ON o.OrderID = od.OrderID
+    GROUP BY 
+        c.CustomerID, c.FirstName, c.LastName
+    ORDER BY 
+        UniqueProducts DESC, TotalPurchaseAmount DESC;
+END;
+
+>>2
+
+WITH DateSeries AS (
+    SELECT CAST(GETDATE() - INTERVAL 1 YEAR AS DATE) + INTERVAL n DAY AS SalesDate
+    FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1 AS n
+        FROM master..spt_values
+    ) AS Numbers
+    WHERE n < 365
+)
+SELECT 
+    DS.SalesDate,
+    DATENAME(WEEKDAY, DS.SalesDate) AS DayOfWeek,
+    COALESCE(SUM(O.TotalAmount), 0) AS TotalSales
+FROM 
+    DateSeries DS
+LEFT JOIN 
+    Orders O ON CAST(O.OrderDate AS DATE) = DS.SalesDate
+GROUP BY 
+    DS.SalesDate
+ORDER BY 
+    DS.SalesDate;
+
+>>3
+
+WITH CategoryOrderSummary AS (
+    SELECT 
+        p.ProductName,
+        c.CategoryName,
+        SUM(od.Quantity) AS TotalQuantityOrdered,
+        AVG(SUM(od.Quantity)) OVER (PARTITION BY c.CategoryID) AS CategoryAverage
+    FROM 
+        OrderDetails od
+    JOIN 
+        Products p ON od.ProductID = p.ProductID
+    JOIN 
+        Categories c ON p.CategoryID = c.CategoryID
+    GROUP BY 
+        p.ProductName, c.CategoryName, c.CategoryID
+)
+SELECT 
+    ProductName,
+    CategoryName,
+    TotalQuantityOrdered,
+    (TotalQuantityOrdered - CategoryAverage) * 100.0 / CategoryAverage AS PercentageAboveAverage
+FROM 
+    CategoryOrderSummary
+WHERE 
+    TotalQuantityOrdered > CategoryAverage;
+
+>>4
+
+SELECT 
+    p.ProductID,
+    p.ProductName,
+    p.Price AS CurrentPrice,
+    ph.OldPrice AS PriceOneYearAgo,
+    (p.Price - ph.OldPrice) AS PriceDifference,
+    ((p.Price - ph.OldPrice) / ph.OldPrice * 100) AS PercentageChange
+FROM 
+    Products p
+JOIN 
+    PriceHistory ph ON p.ProductID = ph.ProductID
+WHERE 
+    ph.ChangeDate = DATEADD(YEAR, -1, GETDATE());
+
+>>5
+
+SELECT 
+    CONCAT(e.FirstName, ' ', e.LastName) AS EmployeeName,
+    CONCAT(m.FirstName, ' ', m.LastName) AS ManagerName
+FROM 
+    Employees e
+LEFT JOIN 
+    Employees m ON e.ManagerID = m.EmployeeID
+
+UNION
+
+SELECT 
+    CONCAT(e.FirstName, ' ', e.LastName) AS EmployeeName,
+    'None' AS ManagerName
+FROM 
+    Employees e
+WHERE 
+    e.ManagerID IS NULL;
+
+
+>>6
+MERGE INTO CustomerSummary AS cs USING
+(
+    SELECT 
+        CustomerID,
+        SUM(TotalAmount) AS TotalSpent,
+        COUNT(OrderID) AS OrderCount,
+        MAX(OrderDate) AS LastOrderDate
+    FROM Orders
+    GROUP BY CustomerID
+) AS o
+
+ON cs.CustomerID = o.CustomerID
+WHEN MATCHED THEN UPDATE SET 
+      cs.TotalSpent = o.TotalSpent,
+      cs.OrderCount = o.OrderCount,
+      cs.LastOrderDate = o.LastOrderDate,
+      cs.LastUpdated = GETDATE();

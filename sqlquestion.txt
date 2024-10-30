@@ -1,0 +1,69 @@
+>>1
+temporary table- Limited to the session that created it     
+Exists until session ends or explicitly dropped       
+Visible only to the session that created it     
+Can be indexed; uses `tempdb`         
+ 
+table variable- Limited to the procedure or function that declared it 
+Exists until the procedure or function ends   
+Faster for small data; stored in memory     
+Cannot have indexes 
+
+>>2
+Local to the procedure: Not accessible outside the procedure. 
+Automatically dropped: No need to manually drop. 
+Session scope still applies: If multiple procedures use the same temp table, data will collide. 
+
+>>3
+IF OBJECT_ID('tempdb.#test') IS NOT NULL 
+DROP TABLE #test 
+
+>>4
+SELECT item,  
+       MAX(price) AS Max_Price,  
+       MIN(price) AS Min_Price 
+INTO #items 
+FROM [bijoy].[ Items_Ordered] 
+GROUP BY Item 
+HAVING MIN(price) > 15 AND COUNT(item) > 1 
+select * from #items 
+
+display the above temp table #items using a Stored procedure. 
+create procedure pitem 
+AS 
+BEGIN 
+
+SELECT item,  
+       MAX(price) AS Max_Price,  
+       MIN(price) AS Min_Price 
+INTO #items 
+FROM [bijoy].[ Items_Ordered] 
+GROUP BY Item 
+HAVING MIN(price) > 15 AND COUNT(item) > 1 
+select * from #items 
+SELECT * FROM [bijoy].[ Items_Ordered] 
+END 
+
+EXEC pitem 
+
+>>5
+create procedure pmark 
+AS  
+BEGIN 
+Declare @markdemo Table(regno int,marks int); 
+insert into @markdemo values(37980858,	70), 
+(97694759,	40), 
+(98958769,	90), 
+(45812084,	45), 
+(73207408,	75), 
+(83740976,	60), 
+(12389045,	80), 
+(56737642,	85), 
+(49835984,	55), 
+(43793434,	30), 
+(42089482,	100);  
+select sum(marks) as MARK from  @markdemo  
+
+END 
+
+exec pmark 

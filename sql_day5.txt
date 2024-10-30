@@ -1,0 +1,108 @@
+>>1
+select Item , Firstname +' '+ Lastname as customername
+from bijoy.Customers1 as c
+inner join bijoy.Items_Ordered as i
+on c.Customerid = i.customerID
+
+>>2
+select Customerid from bijoy.Customers1
+union 
+select customerID from bijoy.Items_Ordered
+
+select Customerid from bijoy.Customers1
+union all
+select customerID from bijoy.Items_Ordered 
+
+create table bijoy.patient(patientID smallint, Patientname varchar(50), Admitdate date, Dischargedate date, AttendphyID smallint)
+insert into bijoy.patient values
+(1, 'John Doe', '2023-01-01', '2023-01-10', 1),
+(2, 'Jane Smith', '2023-01-05', '2023-01-15', 2);
+
+create table bijoy.Billing(Billno int, patientID smallint, BillDuedate date, TotalCharges decimal(10,2))
+insert into bijoy.Billing values
+(1001, 1, '2023-01-15', 500.00),
+(1002, 2, '2023-01-20', 750.00);
+
+
+>>3
+select p.patientID , b.Billno, b.BillDuedate, b.TotalCharges
+from bijoy.patient as p
+join bijoy.Billing as b
+on p.patientID = b.patientID
+
+>>4
+create table bijoy.policies(policyid int, patientid int, paymentmode varchar(20))
+insert into bijoy.policies values
+(1, 1, 'cash'),
+(2, 2, 'online');
+
+select p.patientID, p.Patientname
+from bijoy.patient p
+left join bijoy.policies po
+on p.patientID = po.policyid
+where po.policyid is null and po.paymentmode = 'cash'
+
+
+>>5
+create table bijoy.physician (phyid int, firstname varchar(50), lastname varchar(50),phytype varchar(50),
+npi varchar(20), license_status varchar(50))
+
+insert into bijoy.physician values
+(1, 'Alice', 'Johnson', 'Surgeon', '1234567890', 'Active'),
+(2, 'Bob', 'Williams', 'Pediatrician', '0987654321', 'Active');
+
+create table bijoy.specialise(specialid int, patientid smallint, specialisation varchar(50), degree varchar(20))
+insert into bijoy.specialise values
+(1, 1, 'General Surgery', 'MD'),
+(2, 2, 'Pediatrics', 'DO');
+
+SELECT  Ph.FirstName+ ' '+ Ph.LastName AS PhysicianName, 
+    Ph.Phytype, 
+    Ph.NPI, 
+    S.specialisation, 
+    S.degree 
+FROM   bijoy.physician Ph 
+JOIN 
+    bijoy.specialise S ON Ph.phyid = S.patientid 
+WHERE 
+    Ph.License_Status = 'ACTIVE';
+
+>>6
+SELECT 
+    Ph.firstname +  ' ' + Ph.lastname AS PhysicianName, 
+    COUNT(P.patientID) AS AttendedPatients 
+FROM 
+    bijoy.physician Ph 
+JOIN 
+    bijoy.patient P ON Ph.phyid = P.AttendphyID
+GROUP BY 
+    Ph.firstname, Ph.lastname;
+
+>>7
+SELECT 
+    P.Patientname, 
+    P.PatientID, 
+    DATEDIFF(DAY, P.AdmitDate, P.Dischargedate) AS DaysBetween 
+FROM 
+    bijoy.patient P 
+WHERE 
+    P.AttendphyID = 1; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

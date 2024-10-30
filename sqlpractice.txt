@@ -1,0 +1,148 @@
+>>1
+select * from bijoy.Worker
+
+>>1
+select replace(FIRST_NAME,'a','A') as FirstName from bijoy.Worker;
+ 
+>>2
+select concat(FIRST_NAME,' ',LAST_NAME) as COMPLETE_NAME from bijoy.Worker;
+ 
+>>3
+select * from bijoy.Worker order by FIRST_NAME asc;
+ 
+>>4
+select * From bijoy.Worker Order by First_name asc, Department desc;
+ 
+>>5
+Select * From bijoy.Worker Where First_Name in ( 'Vipul', 'Satish' );
+ 
+>>6
+Select * From bijoy.Worker Where First_Name not in ( 'Vipul', 'Satish' );
+ 
+>>7
+Select * From bijoy.Worker Where Department like 'Admin%';
+ 
+>>8
+Select * From bijoy.Worker Where First_Name like '%a%';
+ 
+>>9
+Select * From bijoy.Worker Where First_Name like '%a';
+ 
+>>10
+Select * from bijoy.Worker where FIRST_NAME like '_____h';
+ 
+>>11
+Select * from bijoy.Worker where SALARY between 100000 and 500000;
+ 
+>>12
+Select * from bijoy.Worker where year(JOINING_DATE) = 2014 and month(JOINING_DATE) = 2;
+ 
+>>13
+select count(department) from bijoy.worker where department = 'Admin';
+ 
+>>14
+SELECT CONCAT(FIRST_NAME, ' ', LAST_NAME) As Worker_Name, Salary FROM bijoy.Worker WHERE WORKER_ID IN
+ (SELECT WORKER_ID FROM bijoy.Worker WHERE Salary BETWEEN 50000 AND 100000);
+ 
+>>15
+select department, count(worker_id) as num from bijoy.worker  group by department order by num desc;
+ 
+>>16
+SELECT * FROM bijoy.Worker WHERE WorkerID IN (SELECT ManagerID FROM Managers);
+ 
+>>17
+SELECT Title, COUNT(*) AS TitleCount 
+FROM bijoy.Employees 
+GROUP BY Title 
+HAVING COUNT(*) > 1;
+
+
+
+
+
+
+
+ 
+18)
+SELECT * FROM bijoy.Table WHERE 
+(SELECT COUNT(*) FROM bijoy.Table AS T2 WHERE T2.ID <= bijoy.Table.ID) % 2 = 1;
+ 
+19)
+SELECT * FROM bijoy.Table WHERE (SELECT COUNT(*) FROM bijoy.Table AS T2 WHERE T2.ID <= bijoy.Table.ID) % 2 = 0;
+ 
+20)
+SELECT * FROM bijoy.tableA WHERE ID NOT IN (SELECT ID FROM bijoy.tableB);
+ 
+21)
+SELECT GETDATE() AS CurrentDateTime;
+ 
+22)
+SELECT TOP 5 * FROM bijoy.Employees ORDER BY Salary DESC;
+ 
+23)
+SELECT DISTINCT Salary FROM bijoy.Employees AS E1 
+WHERE 5 = (SELECT COUNT(DISTINCT Salary) FROM bijoy.Employees AS E2 WHERE E2.Salary > E1.Salary);
+ 
+24)
+SELECT MAX(Salary) FROM bijoy.Employees 
+WHERE Salary < (SELECT MAX(Salary) FROM bijoy.Employees 
+                 WHERE Salary < (SELECT MAX(Salary) FROM bijoy.Employees 
+                                 WHERE Salary < (SELECT MAX(Salary) FROM Employees)));
+ 
+25)
+SELECT Salary FROM bijoy.Employees 
+GROUP BY Salary 
+HAVING COUNT(*) > 1;
+ 
+26)
+SELECT MAX(Salary) FROM bijoy.Employees 
+WHERE Salary < (SELECT MAX(Salary) FROM bijoy.Employees);
+ 
+27)
+SELECT * FROM bijoy.Table UNION ALL SELECT * FROM bijoy.Table WHERE ID = 'specific_id';
+ 
+28)
+SELECT WorkerID FROM bijoy.Worker_table WHERE Bonus IS NULL;
+ 
+29)
+SELECT TOP (SELECT COUNT(*) / 2 FROM bijoy.Table) * FROM bijoy.Table;
+ 
+30)
+SELECT DepartmentID FROM bijoy.Employees 
+WHERE (SELECT COUNT(*) FROM Employees WHERE Employees.DepartmentID = Departments.DepartmentID) < 4;
+ 
+31)
+SELECT DepartmentID, COUNT(*) AS NumberOfPeople 
+FROM bijoy.Employees 
+GROUP BY DepartmentID;
+ 
+32)
+SELECT TOP 1 * FROM bijoy.Table ORDER BY ID DESC;
+ 
+33)
+SELECT TOP 1 * FROM bijoy.Table;
+ 
+34)
+SELECT * FROM (SELECT *, ROW_NUMBER() OVER (ORDER BY ID DESC) AS RowNum FROM bijoy.Table) AS T 
+WHERE RowNum <= 5;
+ 
+35)
+SELECT EmployeeName FROM bijoy.Employees 
+WHERE Salary IN (SELECT MAX(Salary) FROM Employees GROUP BY DepartmentID);
+ 
+37)
+SELECT DISTINCT Salary FROM bijoy.Employees AS E1 
+WHERE (SELECT COUNT(*) FROM bijoy.Employees AS E2 WHERE E2.Salary < E1.Salary) < 3;
+ 
+38)
+SELECT DISTINCT Salary FROM bijoy.Employees AS E1 
+WHERE (SELECT COUNT(DISTINCT Salary) FROM bijoy.Employees AS E2 WHERE E2.Salary > E1.Salary) = n;
+ 
+39)
+SELECT DepartmentID, SUM(Salary) AS TotalSalaries 
+FROM bijoy.Employees 
+GROUP BY DepartmentID;
+ 
+40)
+SELECT EmployeeName FROM bijoy.Employees 
+WHERE Salary = (SELECT MAX(Salary) FROM Employees);

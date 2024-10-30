@@ -1,0 +1,94 @@
+>>1
+create table bijoy.Orders(orderid int primary key,customerid int,
+orderdate date,quantity int,status varchar(50));
+
+create table bijoy.orderupdates(orderid int primary key,customerid int,
+orderdate date,quantity int,status varchar(50));
+
+insert into bijoy.Orders(orderid ,customerid ,orderdate ,quantity ,status ) values 
+(1,101,'2024-09-01',10,'shipped'),
+(2,102,'2024-09-02',5,'processing'),
+(3,103,'2024-09-03',7,'shipped');
+ 
+insert into bijoy.orderupdates(orderid ,customerid ,orderdate ,quantity ,status ) values 
+(1,101,'2024-09-01',12,'delivered'),
+(2,102,'2024-09-02',5,'processing'),
+(3,104,'2024-09-05',3,'new');
+
+merge into bijoy.Orders as target
+using bijoy.orderupdates as source
+on target.orderid=source.orderid
+ 
+when matched then
+update set
+target.quantity=source.quantity,
+target.status=source.status
+ 
+when not matched by target then
+insert(orderid,customerid,orderdate,quantity,status)
+values(source.orderid,source.customerid,source.orderdate,source.quantity,source.status)
+ 
+when not matched by source then
+delete;
+ 
+--------------------------------------------------------------
+
+>>2
+CREATE TABLE bijoy.productcatalog (productid INT PRIMARY KEY, productname VARCHAR(100), price DECIMAL(10, 2), description VARCHAR(255) ); 
+CREATE TABLE bijoy.productchanges (productid INT PRIMARY KEY, productname VARCHAR(100), price DECIMAL(10, 2), description VARCHAR(255) );
+ 
+INSERT INTO bijoy.productcatalog (productid, productname, price, description) VALUES 
+(1, 'Laptop', 1200.00, 'High-end gaming laptop'), 
+(2, 'Smartphone', 800.00, 'Latest model with 5G'), 
+(3, 'Tablet', 500.00, 'Lightweight and portable tablet');
+ 
+INSERT INTO bijoy.productchanges (productid, productname, price, description) VALUES 
+(1, 'Laptop', 1150.00, 'Updated model with new specs'),
+(2, 'Smartphone', 800.00, 'Latest model with 5G'),
+(4, 'Smartwatch', 300.00, 'Smartwatch with fitness tracking');  
+ 
+MERGE INTO bijoy.productcatalog AS target
+USING bijoy.productchanges AS source
+ON target.productid = source.productid
+ 
+WHEN MATCHED THEN 
+UPDATE SET
+target.productname = source.productname, 
+target.price = source.price, 
+target.description = source.description
+ 
+WHEN NOT MATCHED BY TARGET THEN 
+INSERT (productid, productname, price, description)
+VALUES (source.productid, source.productname, source.price, source.description)
+ 
+WHEN NOT MATCHED BY SOURCE THEN 
+DELETE;  
+
+--------------------------------------------------------------------
+>>3
+ 
+CREATE TABLE bijoy.Customers2 ( customerid INT PRIMARY KEY, customername VARCHAR(100), isactive BIT ); 
+CREATE TABLE bijoy.subscriptionchanges ( customerid INT PRIMARY KEY, customername VARCHAR(100) );
+ 
+INSERT INTO bijoy.Customers2 (customerid, customername, isactive) VALUES
+(1, 'John Doe', 1),
+(2, 'Jane Smith', 1), 
+(3, 'Alice Johnson', 0);
+ 
+INSERT INTO bijoy.subscriptionchanges (customerid, customername) VALUES 
+(1, 'John Doe'),
+(4, 'Bob Brown');
+ 
+MERGE INTO bijoy.Customers2 AS target 
+USING bijoy.subscriptionchanges AS source
+ON target.customerid = source.customerid
+ 
+WHEN MATCHED THEN 
+UPDATE SET 
+target.customername = source.customername, target.isactive = 1
+ 
+WHEN NOT MATCHED BY TARGET THEN 
+INSERT (customerid, customername, isactive)
+VALUES (source.customerid, source.customername, 1) 
+WHEN NOT MATCHED BY SOURCE THEN
+UPDATE SET target.isactive = 0;  

@@ -1,0 +1,44 @@
+>>1
+SELECT SUBSTRING(first_name,1,5) from meghaa.worker
+
+>>2
+select UPPER(department) from meghaa.worker
+
+>>3
+select LEN(department) from meghaa.worker
+
+>>4
+select CONCAT(first_name,' ',last_name)as fullname from meghaa.worker
+
+>>5
+select REPLACE(department,'hr','senior hr') as replaced from meghaa.worker
+
+>>6
+declare @myvar date set @myvar=CONVERT(date,getdate())
+select JOINING_DATE as date from meghaa.worker where joining_date=@myvar
+
+>>7
+select item from meghaa.Item_Orderd as o where year(order_date)=1999
+
+>>8
+SELECT DATEADD(m, DATEDIFF(m, 0, GETDATE()), 0)
+
+>>9
+select item,DATEADD(MONTH,30,order_date) from meghaa.Item_Orderd
+
+>>10
+select first_name,salary,rank() over(partition by department order by salary desc) as ranknum,
+dense_rank() over(partition by department order by salary desc) as dens_ran
+from meghaa.worker
+
+>>11
+select first_name,salary,row_number() over(partition by first_name order by department desc) as rownum
+from meghaa.worker
+
+>>12
+select first_name,salary,joining_date,
+dense_rank() over(partition by department order by joining_date desc) as dens_rank
+from meghaa.worker
+
+>>13
+select top 3 salary from meghaa.worker
